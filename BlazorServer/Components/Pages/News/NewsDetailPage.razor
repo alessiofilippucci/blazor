@@ -1,0 +1,48 @@
+﻿@page "/news/detail"
+@page "/news/detail/{Id}"
+
+@inject NewsService newsService
+@inject NavigationManager NavigationManager
+
+<PageTitle>News</PageTitle>
+
+@if (IsLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (news == null)
+    {
+        <Heading Text="News NOT FOUND" />
+    }
+    else
+    {
+        <Heading Text=@news.Titolo />
+        <Heading ImportantLevel=2 Text=@news.DataPubblicazione />
+        <Heading ImportantLevel=2 Text=@news.Autore />
+    }
+}
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private bool IsLoading = true;
+
+    private NewsDetail? news;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Id))
+        {
+            news = await newsService.GetDataByIdAsync(Id);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+        IsLoading = false;
+    }
+}

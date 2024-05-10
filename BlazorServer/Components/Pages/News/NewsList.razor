@@ -1,0 +1,61 @@
+﻿@page "/news"
+
+@inject NewsService newsService
+
+<PageTitle>News</PageTitle>
+
+<h1>News</h1>
+
+@if (newsList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <span>Id blocco</span>
+    <input @bind-value=IdBlocco />
+    <button @onclick="GetData">CARICA DATI</button>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Pos</th>
+                <th>Titolo</th>
+                <th>Autore</th>
+                <th>DataPubblicazione</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var news in newsList)
+            {
+                <tr>
+                    <td>@news.Pos</td>
+                    <td>@news.Titolo</td>
+                    <td>@news.Autore</td>
+                    <td>@news.DataPubblicazione</td>
+                    <td>
+                        <NavLink class="nav-link" href="@($"news/detail/{news.IdNews}")">
+                            Dettaglio
+                        </NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private int? IdBlocco { get; set; }
+
+    private List<News>? newsList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetData();
+    }
+
+    protected async Task GetData()
+    {
+        newsList = await newsService.GetDataAsync(IdBlocco.HasValue ? IdBlocco.Value : null);
+    }
+}

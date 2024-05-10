@@ -1,0 +1,31 @@
+﻿@switch (ImportantLevel)
+{
+    default:
+    case 1:
+        <h1>@Text</h1>
+        break;
+    case 2:
+        <h2>@Text</h2>
+        break;
+    case 3:
+        <h3>@Text</h3>
+        break;
+    case 4:
+        <h4>@Text</h4>
+        break;
+    case 5:
+        <h5>@Text</h5>
+        break;
+    case 6:
+        <h6>@Text</h6>
+        break;
+}
+
+@code {
+
+    [Parameter]
+    public int ImportantLevel { get; set; } = 1;
+
+    [Parameter]
+    public string Text { get; set; } = null!;
+}

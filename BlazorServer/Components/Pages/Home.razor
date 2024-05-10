@@ -1,0 +1,56 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<Container>
+    <Content>
+        <h1>test 2</h1>
+    </Content>
+</Container>
+
+<br />
+
+<Container>
+    <Content>
+        <Heading Text="Welcome to your new app." />
+    </Content>
+</Container>
+
+<br />
+<br />
+
+<Card>
+    <Header>
+        <Heading Text="Titolo" />
+    </Header>
+    <Body>
+        <input name="name" />
+    </Body>
+    <Footer>
+        <button>Cancel</button>
+        <button>Save</button>
+    </Footer>
+</Card>
+
+<br />
+<br />
+
+<Card>
+    <Body>
+        <input name="name" />
+    </Body>
+</Card>
+
+<br />
+<br />
+
+<button @onclick="Test">Test</button>
+
+<ul>
+    @foreach (var action in Actions)
+    {
+        <li>@action</li>
+    }
+</ul>
