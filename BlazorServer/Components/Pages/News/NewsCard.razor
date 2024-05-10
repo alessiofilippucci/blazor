@@ -1,0 +1,34 @@
+﻿@if (News == null)
+{
+    <Card>
+        <Header>
+        </Header>
+        <Body>
+            <Heading Text="News not found" />
+        </Body>
+        <Footer>
+        </Footer>
+    </Card>
+}
+else
+{
+    <Card>
+        <Header>
+            <Heading ImportantLevel="2" Text=@News.Titolo />
+            <Heading ImportantLevel="4" Text=@News.Autore />
+        </Header>
+        <Body>
+            <p>
+                @News.SommarioHtml
+            </p>
+        </Body>
+        <Footer>
+            <Heading ImportantLevel="3" Text=@News.DataPubblicazione />
+        </Footer>
+    </Card>
+}
+
+@code {
+    [Parameter]
+    public News News { get; set; }
+}

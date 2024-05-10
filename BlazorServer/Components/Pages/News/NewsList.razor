@@ -12,10 +12,6 @@
 }
 else
 {
-    <span>Id blocco</span>
-    <input @bind-value=IdBlocco />
-    <button @onclick="GetData">CARICA DATI</button>
-
     <table class="table">
         <thead>
             <tr>
@@ -23,6 +19,7 @@ else
                 <th>Titolo</th>
                 <th>Autore</th>
                 <th>DataPubblicazione</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -45,8 +42,6 @@ else
 }
 
 @code {
-    private int? IdBlocco { get; set; }
-
     private List<News>? newsList;
 
     protected override async Task OnInitializedAsync()
@@ -56,6 +51,6 @@ else
 
     protected async Task GetData()
     {
-        newsList = await newsService.GetDataAsync(IdBlocco.HasValue ? IdBlocco.Value : null);
+        newsList = await newsService.GetDataAsync();
     }
 }

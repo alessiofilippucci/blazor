@@ -12,10 +12,10 @@ namespace BlazorServer.Services
             _client = new RestClient("https://ws3.class.it/CE.Content/Content.svc/");
         }
 
-        public async Task<List<News>> GetDataAsync(int? idBlocco = 7)
+        public async Task<List<News>> GetDataAsync()
         {
             var request = new RestRequest("get-news-blocco-dettaglio", Method.Get);
-            request.AddQueryParameter("id_blocco", idBlocco.GetValueOrDefault());
+            request.AddQueryParameter("id_blocco", 1);
             var queryResult = await _client.ExecuteAsync<List<News>>(request);
 
             if (queryResult.IsSuccessStatusCode)
@@ -28,21 +28,10 @@ namespace BlazorServer.Services
             }
         }
 
-        public async Task<NewsDetail?> GetDataByIdAsync(string id)
+        public async Task<News?> GetDataByIdAsync(string id)
         {
-            var request = new RestRequest("dettaglionews", Method.Get);
-            request.AddQueryParameter("id", id);
-            var queryResult = await _client.ExecuteAsync<NewsDetail>(request);
-
-            if (queryResult.IsSuccessStatusCode)
-            {
-                return queryResult.Data;
-            }
-            else
-            {
-                return null;
-            }
+            var newsList = await GetDataAsync();
+            return newsList.FirstOrDefault(x => x.IdNews == id);
         }
-
     }
 }

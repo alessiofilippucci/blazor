@@ -12,16 +12,7 @@
 }
 else
 {
-    if (news == null)
-    {
-        <Heading Text="News NOT FOUND" />
-    }
-    else
-    {
-        <Heading Text=@news.Titolo />
-        <Heading ImportantLevel=2 Text=@news.DataPubblicazione />
-        <Heading ImportantLevel=2 Text=@news.Autore />
-    }
+    <NewsCard News="@news" />
 }
 
 @code {
@@ -30,7 +21,7 @@ else
 
     private bool IsLoading = true;
 
-    private NewsDetail? news;
+    private News? news;
 
     protected override async Task OnInitializedAsync()
     {
