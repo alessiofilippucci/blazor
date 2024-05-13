@@ -44,13 +44,17 @@ else
 @code {
     private List<News>? newsList;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await GetData();
+        AuthService authService = new AuthService();
+
+        authService.Login("Z21hZTZLNlloRTVOMStSZm1KV1FFQT09", "V3hZT0xXTnlwemhlZm10L2VwMGlDQT09");
+
+        GetData();
     }
 
-    protected async Task GetData()
+    protected void GetData()
     {
-        newsList = await newsService.GetDataAsync();
+        newsList = newsService.GetData("1");
     }
 }

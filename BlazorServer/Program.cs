@@ -14,6 +14,20 @@ namespace BlazorServer
                 .AddInteractiveServerComponents();
 
             builder.Services.AddScoped<NewsService>();
+            builder.Services.AddScoped<CacheService>();
+            builder.Services.AddScoped<AuthService>();
+            
+            builder.Services.AddMemoryCache();
+
+            builder.Services.AddCascadingAuthenticationState();
+
+            //builder.Services.AddAuthentication(o =>
+            //{
+            //    o.DefaultAuthenticateScheme = "test";
+            //});
+
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore();
 
             var app = builder.Build();
 

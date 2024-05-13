@@ -1,0 +1,36 @@
+﻿@page "/login"
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h3>Login</h3>
+
+<form>
+    <label>ACCOUNT</label>
+    <input name="account" @bind-value=Account />
+    <label>PASSWORD</label>
+    <input name="password" type="password" @bind-value=Password />
+    <button type="button" @onclick=OnLogin>LOGIN</button>
+</form>
+
+<p class="text-danger">@ErrorMessage</p>
+
+@code {
+    public string Account { get; set; } = "";
+    public string Password { get; set; } = "";
+
+    private string ErrorMessage = "";
+
+    protected void OnLogin()
+    {
+        var response = AuthService.Login(Account, Password);
+
+        if (response.Message != null && response.Message == "OK")
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            ErrorMessage = "Login failed";
+        }
+    }
+}

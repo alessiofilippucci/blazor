@@ -1,0 +1,23 @@
+﻿@using System.Net
+@inject NavigationManager UriHelper
+
+@code {
+    protected override void OnInitialized()
+    {
+        try
+        {
+            var pathAndQuery = new Uri(UriHelper.Uri).PathAndQuery;
+
+            if (pathAndQuery != "/")
+            {
+                var returnUrl = WebUtility.UrlEncode(pathAndQuery);
+                UriHelper.NavigateTo($"login?returnUrl={returnUrl}");
+            }
+        }
+        catch
+        {
+        }
+
+        UriHelper.NavigateTo($"login");
+    }
+}

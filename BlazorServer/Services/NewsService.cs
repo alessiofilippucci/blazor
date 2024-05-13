@@ -5,32 +5,41 @@ namespace BlazorServer.Services
 {
     public class NewsService
     {
+        protected readonly CacheService _cacheService;
         protected readonly RestClient _client;
 
-        public NewsService()
+        public NewsService(CacheService cacheService)
         {
+            _cacheService = cacheService;
             _client = new RestClient("https://ws3.class.it/CE.Content/Content.svc/");
         }
 
-        public async Task<List<News>> GetDataAsync()
+        public List<News> GetData(string idBlocco = "1")
         {
-            var request = new RestRequest("get-news-blocco-dettaglio", Method.Get);
-            request.AddQueryParameter("id_blocco", 1);
-            var queryResult = await _client.ExecuteAsync<List<News>>(request);
+            var cacheKey = $"all_news_{idBlocco}";
 
-            if (queryResult.IsSuccessStatusCode)
+            List<News> data = _cacheService.GetOrSetCache(cacheKey, () =>
             {
-                return queryResult.Data ?? [];
-            }
-            else
-            {
-                return [];
-            }
+                var request = new RestRequest("get-news-blocco-dettaglio", Method.Get);
+                request.AddQueryParameter("id_blocco", idBlocco);
+                var queryResult = _client.Execute<List<News>>(request);
+
+                if (queryResult.IsSuccessStatusCode)
+                {
+                    return queryResult.Data ?? [];
+                }
+                else
+                {
+                    return [];
+                }
+            });
+
+            return data;
         }
 
-        public async Task<News?> GetDataByIdAsync(string id)
+        public News? GetDataById(string id)
         {
-            var newsList = await GetDataAsync();
+            var newsList = GetData();
             return newsList.FirstOrDefault(x => x.IdNews == id);
         }
     }
