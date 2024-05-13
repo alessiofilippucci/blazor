@@ -53,7 +53,5 @@ namespace BlazorServer.Components.Pages
         protected void Test()
         { 
         }
-
-
     }
 }
