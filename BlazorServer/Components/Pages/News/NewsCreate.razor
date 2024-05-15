@@ -1,0 +1,37 @@
+﻿@page "/news/create"
+
+<EditForm Model="Model" OnSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText @bind-Value=Model!.Titolo />
+    <InputText @bind-Value=Model!.Autore />
+
+    <button type="submit">SALVA</button>
+</EditForm>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public News? Model { get; set; }
+
+    public List<string> Errors { get; set; } = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        Model ??= new News();
+    }
+
+    protected void OnSubmit(EditContext context)
+    {
+        var isValid = context.Validate();
+
+        if (isValid)
+        {
+            Log.Logger.Information($"Crea: Titolo={Model!.Titolo}, Autore={Model!.Autore}");
+        }
+        else
+        {
+            Errors = context.GetValidationMessages().ToList();
+        }
+    }
+}

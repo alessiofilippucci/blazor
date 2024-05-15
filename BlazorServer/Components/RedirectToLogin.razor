@@ -11,13 +11,13 @@
             if (pathAndQuery != "/")
             {
                 var returnUrl = WebUtility.UrlEncode(pathAndQuery);
-                UriHelper.NavigateTo($"login?returnUrl={returnUrl}");
+                UriHelper.NavigateTo($"/login?returnUrl={returnUrl}", forceLoad: true);
             }
         }
         catch
         {
         }
 
-        UriHelper.NavigateTo($"login");
+        UriHelper.NavigateTo("/login", forceLoad: true);
     }
 }

@@ -1,12 +1,17 @@
-﻿namespace BlazorServer.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BlazorServer.Models
 {
     public class News
     {
         public int Pos { get; set; }
         public string IdNews { get; set; } = null!;
-        public string Titolo { get; set; } = null!;
+        [Required]
+        public string? Titolo { get; set; }
         public string DataPubblicazione { get; set; } = null!;
         public string TipiCod { get; set; } = null!;
+        [Required]
+        [StringLength(5)]
         public string Autore { get; set; } = null!;
         public string IconaCategoria { get; set; } = null!;
         public bool LinkTargetBlank { get; set; }

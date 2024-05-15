@@ -1,4 +1,5 @@
 ﻿@page "/login"
+@attribute [AllowAnonymous]
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
 
@@ -8,7 +9,7 @@
     <label>ACCOUNT</label>
     <input name="account" @bind-value=Account />
     <label>PASSWORD</label>
-    <input name="password" type="password" @bind-value=Password />
+    <input name="password" @bind-value=Password />
     <button type="button" @onclick=OnLogin>LOGIN</button>
 </form>
 
@@ -24,7 +25,7 @@
     {
         var response = AuthService.Login(Account, Password);
 
-        if (response.Message != null && response.Message == "OK")
+        if (response)
         {
             NavigationManager.NavigateTo("/");
         }

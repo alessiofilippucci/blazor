@@ -12,6 +12,12 @@
 }
 else
 {
+    <div>
+        <NavLink class="nav-link" href="@("news/create")">
+            Aggiungi news
+        </NavLink>
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -46,8 +52,6 @@ else
 
     protected override void OnInitialized()
     {
-        AuthService authService = new AuthService();
-
 
         GetData();
     }

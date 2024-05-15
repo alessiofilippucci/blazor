@@ -21,7 +21,7 @@ namespace BlazorServer.Services
 
         public List<News> GetData(string idBlocco = "1")
         {
-            Log.Logger.Information("TEST");
+            //Log.Logger.Information("TEST");
 
             var cacheKey = $"all_news_{idBlocco}";
 

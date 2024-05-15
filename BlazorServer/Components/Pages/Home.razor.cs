@@ -1,9 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 
 namespace BlazorServer.Components.Pages
 {
     public partial class Home : ComponentBase
     {
+        [CascadingParameter]
+        private Task<AuthenticationState>? authenticationState { get; set; }
+
+        public string DisplayName {  get; set; }
+
         public List<string> Actions { get; set; } = new List<string>();
 
         public override Task SetParametersAsync(ParameterView parameters)
@@ -20,7 +27,25 @@ namespace BlazorServer.Components.Pages
         protected override async Task OnInitializedAsync()
         {
             Actions.Add("OnInitializedAsync");
-            StateHasChanged();
+
+            var authState = await authenticationState;
+
+            if(authState != null)
+            {
+                var user = authState?.User;
+
+                if (user.Identity is not null && user.Identity.IsAuthenticated)
+                {
+                    DisplayName = user.Identity.Name;
+                }
+
+                if (user.IsInRole("Admin"))
+                {
+
+                }
+
+            }
+
         }
 
         protected override void OnParametersSet()

@@ -1,6 +1,8 @@
 using BlazorServer.Components;
+using BlazorServer.Infrastructure;
 using BlazorServer.Installers.ServiceBuilder;
 using BlazorServer.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Rewrite;
 using Serilog;
 
@@ -11,7 +13,7 @@ namespace BlazorServer
         public static void Main(string[] args)
         {
             var loggerConfig = LoggingServiceBuilder.GetConfig();
-            
+
             Log.Logger = loggerConfig.CreateLogger();
 
             try
@@ -28,17 +30,11 @@ namespace BlazorServer
                 builder.Services.AddScoped<CacheService>();
                 builder.Services.AddScoped<AuthService>();
 
+                builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
                 builder.Services.AddMemoryCache();
 
                 builder.Services.AddCascadingAuthenticationState();
-
-                //builder.Services.AddAuthentication(o =>
-                //{
-                //    o.DefaultAuthenticateScheme = "test";
-                //});
-
-                builder.Services.AddOptions();
-                builder.Services.AddAuthorizationCore();
 
                 builder.Services.ConfigureLogger();
 
