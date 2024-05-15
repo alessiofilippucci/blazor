@@ -1,82 +1,18 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+﻿using BlazorServer.Services;
+using Microsoft.AspNetCore.Components;
 
 namespace BlazorServer.Components.Pages
 {
     public partial class Home : ComponentBase
     {
-        [CascadingParameter]
-        private Task<AuthenticationState>? authenticationState { get; set; }
-
-        public string DisplayName {  get; set; }
-
-        public List<string> Actions { get; set; } = new List<string>();
-
-        public override Task SetParametersAsync(ParameterView parameters)
-        {
-            Actions.Add("SetParametersAsync");
-            return base.SetParametersAsync(parameters);
-        }
-
-        protected override void OnInitialized()
-        {
-            Actions.Add("OnInitialized");
-        }
+        [Inject]
+        private AuthService AuthService { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            Actions.Add("OnInitializedAsync");
-
-            var authState = await authenticationState;
-
-            if(authState != null)
+            if (AuthService != null && AuthService.CurrentUser != null)
             {
-                var user = authState?.User;
-
-                if (user.Identity is not null && user.Identity.IsAuthenticated)
-                {
-                    DisplayName = user.Identity.Name;
-                }
-
-                if (user.IsInRole("Admin"))
-                {
-
-                }
-
             }
-
-        }
-
-        protected override void OnParametersSet()
-        {
-            Actions.Add("OnParametersSet");
-        }
-
-        protected override async Task OnParametersSetAsync()
-        {
-            Actions.Add("OnParametersSetAsync");
-        }
-
-        protected override bool ShouldRender()
-        {
-            Actions.Add("ShouldRender");
-
-            return base.ShouldRender();
-        }
-
-        protected override void OnAfterRender(bool firstRender)
-        {
-            Actions.Add($"OnAfterRender: {firstRender}");
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            Actions.Add($"OnAfterRenderAsync: {firstRender}");
-        }
-
-        protected void Test()
-        { 
         }
     }
 }

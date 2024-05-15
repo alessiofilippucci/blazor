@@ -1,0 +1,10 @@
+﻿@page "/private"
+@attribute [Authorize(Roles = $"{Roles.Private}")]
+
+<PageTitle>Private Page</PageTitle>
+
+<Card>
+    <Body>
+        <h2>Private Page</h2>
+    </Body>
+</Card>

@@ -1,9 +1,22 @@
-﻿
+﻿@using System.Net
+@inject NavigationManager UriHelper
+
 <p>You are not authorized to access this resource.</p>
 
 @code {
-
     protected override void OnInitialized()
     {
+        try
+        {
+            var pathAndQuery = new Uri(UriHelper.Uri).PathAndQuery;
+
+            if (pathAndQuery == "/private")
+            {
+                UriHelper.NavigateTo("/private/registration");
+            }
+        }
+        catch
+        {
+        }
     }
 }

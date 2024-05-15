@@ -5,6 +5,7 @@ using BlazorServer.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Rewrite;
 using Serilog;
+using System.Security.Claims;
 
 namespace BlazorServer
 {
@@ -35,6 +36,16 @@ namespace BlazorServer
                 builder.Services.AddMemoryCache();
 
                 builder.Services.AddCascadingAuthenticationState();
+
+                builder.Services.AddOptions();
+                builder.Services.AddAuthorizationCore(options =>
+                {
+                    options.AddPolicy("Test", policy =>
+                    {
+                        policy.RequireRole(Roles.Abbonato, Roles.MarketReport);
+                        policy.RequireClaim(ClaimTypes.Country, "IT");
+                    });
+                });
 
                 builder.Services.ConfigureLogger();
 

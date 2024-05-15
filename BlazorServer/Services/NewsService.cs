@@ -1,6 +1,5 @@
 ﻿using BlazorServer.Models;
 using RestSharp;
-using Serilog;
 
 namespace BlazorServer.Services
 {
@@ -10,17 +9,28 @@ namespace BlazorServer.Services
 
         protected readonly CacheService _cacheService;
         protected readonly RestClient _client;
+        protected readonly AuthService _authService;
 
-        public NewsService(ILogger<NewsService> logger, CacheService cacheService)
+        public NewsService(
+            ILogger<NewsService> logger,
+            CacheService cacheService,
+            AuthService authService)
         {
             _logger = logger;
 
             _cacheService = cacheService;
+            _authService = authService;
+
             _client = new RestClient("https://ws3.class.it/CE.Content/Content.svc/");
         }
 
         public List<News> GetData(string idBlocco = "1")
         {
+            if (_authService.HasRole(Roles.Abbonato))
+            {
+
+            }
+
             //Log.Logger.Information("TEST");
 
             var cacheKey = $"all_news_{idBlocco}";

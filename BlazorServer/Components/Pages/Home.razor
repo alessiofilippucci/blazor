@@ -2,60 +2,34 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, @DisplayName</h1>
-
-<Container>
-    <Content>
-        <h1>test 2</h1>
-    </Content>
-</Container>
-
-<br />
-
-<Container>
-    <Content>
-        <Heading Text="Welcome to your new app." />
-    </Content>
-</Container>
-
-<br />
-<br />
-
 <Card>
     <Header>
-        <Heading Text="Titolo" />
+        <h1>Hello, @AuthService.DisplayName</h1>
     </Header>
     <Body>
-        <input name="name" />
-    </Body>
-    <Footer>
-        <button>Cancel</button>
-        <button>Save</button>
-    </Footer>
-</Card>
-
-<br />
-<br />
-
-<Card>
-    <Body>
-        <input name="name" />
+        <ul>
+            @foreach (var claim in AuthService.CurrentUser.Claims)
+            {
+                <li>@claim.Type : @claim.Value</li>
+            }
+        </ul>
     </Body>
 </Card>
 
 <br />
-<br />
 
-<Test />
+<AuthorizeView Roles=@(Roles.BuildAutorization(Roles.User, Roles.Admin))>
+    <h1>AUTHORIZED as USER or ADMIN</h1>
+</AuthorizeView>
 
-<br />
-<br />
+<AuthorizeView Roles=@(Roles.Abbonato)>
+    <h1>AUTHORIZED as Abbonato</h1>
+</AuthorizeView>
 
-<button @onclick="Test">Test</button>
+<AuthorizeView Roles=@(Roles.MarketReport)>
+    <h1>AUTHORIZED as MarketReport</h1>
+</AuthorizeView>
 
-<ul>
-    @foreach (var action in Actions)
-    {
-        <li>@action</li>
-    }
-</ul>
+<AuthorizeView Roles=@(Roles.Private)>
+    <h1>AUTHORIZED as Private</h1>
+</AuthorizeView>
