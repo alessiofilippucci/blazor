@@ -3,7 +3,7 @@
 @attribute [AllowAnonymous]
 
 @inject NavigationManager NavigationManager
-@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@inject AuthProvider AuthProvider
 @inject ILocalStorageService LocalStorage
 
 <h3>Login</h3>
@@ -30,12 +30,12 @@
 
         try
         {
-            var (logged, token) = await AuthenticationStateProvider.LoginAsync(Account, Password);
+            var (logged, token) = await AuthProvider.LoginAsync(Account, Password);
 
             if (logged)
             {
                 await LocalStorage.SetItemAsStringAsync("token", token);
-                AuthenticationStateProvider.Refresh();
+                AuthProvider.Refresh();
                 NavigationManager.NavigateTo("/");
             }
             else

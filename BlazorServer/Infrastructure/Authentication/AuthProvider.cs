@@ -1,4 +1,5 @@
-﻿using BlazorServer.Models;
+﻿using BlazorServer.Config;
+using BlazorServer.Models;
 using BlazorServer.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using RestSharp;
@@ -7,8 +8,10 @@ using System.Security.Claims;
 
 namespace BlazorServer.Infrastructure
 {
-    public class CustomAuthenticationStateProvider : AuthenticationStateProvider
+    public class AuthProvider : AuthenticationStateProvider
     {
+        private readonly RedirectRules _redirectRules;
+
         private readonly CacheService _cacheService;
 
         protected readonly RestClient _client;
@@ -20,8 +23,9 @@ namespace BlazorServer.Infrastructure
         public string? DisplayName => IsLoggedIn ? CurrentUserIdentity.Identity?.Name : "";
         public bool HasRole(string role) => IsLoggedIn && CurrentUserIdentity.IsInRole(role);
 
-        public CustomAuthenticationStateProvider(CacheService cacheService)
+        public AuthProvider(CacheService cacheService, RedirectRules redirectRules)
         {
+            _redirectRules = redirectRules;
             _cacheService = cacheService;
 
             _client = new RestClient("http://ws3.class.it/ce.utenti/Utenti.svc/", configureSerialization: s => s.UseNewtonsoftJson());
@@ -41,12 +45,8 @@ namespace BlazorServer.Infrastructure
 
             if (succeeded)
             {
-                var identity = SetupClaimsForUser(value);
-
-                CurrentUserIdentity = SetupClaimsForUser(value);
                 CurrentUser = value;
-
-                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(identity)));
+                Refresh();
             }
 
             return succeeded;
@@ -63,30 +63,17 @@ namespace BlazorServer.Infrastructure
                 loginRequest.AddBody($"account={account}&password={password}", ContentType.Plain);
                 var loginResult = await _client.ExecuteAsync<LoginResponse>(loginRequest);
 
-                if (loginResult.IsSuccessStatusCode && loginResult.Data != null)
+                if (loginResult.IsSuccessStatusCode &&
+                    loginResult.Data != null &&
+                    loginResult.Data.Message?.ToLower() == "ok")
                 {
-                    if (loginResult.Data.Message?.ToLower() == "ok")
+                    var personalDataLogin = loginResult.Data.PersonalDataLogin;
+
+                    if (personalDataLogin != null && await GetUserInfoAsync(personalDataLogin.Userid))
                     {
-                        var personalDataLogin = loginResult.Data.PersonalDataLogin;
-
-                        if (personalDataLogin != null)
-                        {
-                            var userStatusRequest = new RestRequest("status-utente", Method.Get);
-                            userStatusRequest.AddQueryParameter("userid", personalDataLogin.Userid);
-                            var userStatusResult = await _client.ExecuteAsync<User>(userStatusRequest);
-
-                            if (userStatusResult.IsSuccessStatusCode && userStatusResult.Data != null)
-                            {
-                                var user = userStatusResult.Data;
-
-                                token = personalDataLogin.Token;
-                                CurrentUser = user;
-
-                                await _cacheService.SetAsync(token, user);
-
-                                logged = true;
-                            }
-                        }
+                        token = personalDataLogin.Userid;
+                        await _cacheService.SetAsync(token, CurrentUser);
+                        logged = true;
                     }
                 }
             }
@@ -98,13 +85,46 @@ namespace BlazorServer.Infrastructure
             return (logged, token);
         }
 
-        public void Refresh()
+        private async Task<bool> GetUserInfoAsync(string? userId)
         {
-            CurrentUserIdentity = SetupClaimsForUser(CurrentUser);
+            if (!string.IsNullOrEmpty(userId))
+            {
+                try
+                {
+                    var userStatusRequest = new RestRequest("status-utente", Method.Get);
+                    userStatusRequest.AddQueryParameter("userid", userId);
+                    var userStatusResult = await _client.ExecuteAsync<User>(userStatusRequest);
+
+                    if (userStatusResult.IsSuccessStatusCode && userStatusResult.Data != null)
+                    {
+                        CurrentUser = userStatusResult.Data;
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex.Message);
+                }
+            }
+            return false;
+        }
+
+        public async Task RefreshUserInfo(string? token)
+        {
+            if (!string.IsNullOrEmpty(token) && await GetUserInfoAsync(token))
+            {
+                await _cacheService.SetAsync(token, CurrentUser);
+                Refresh(new Claim(ClaimTypes.Role, Roles.Private));
+            }
+        }
+
+        public void Refresh(params Claim[] customClaims)
+        {
+            CurrentUserIdentity = SetupClaimsForUser(CurrentUser, customClaims);
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(CurrentUserIdentity)));
         }
 
-        private ClaimsPrincipal SetupClaimsForUser(User? user)
+        private ClaimsPrincipal SetupClaimsForUser(User? user, params Claim[] customClaims)
         {
             var claims = new List<Claim>();
 
@@ -146,6 +166,7 @@ namespace BlazorServer.Infrastructure
                 }
 
                 claims.AddRange(roleClaims);
+                claims.AddRange(customClaims);
             }
 
             var identity = new ClaimsIdentity(claims, "CustomAuthentication");

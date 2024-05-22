@@ -1,18 +1,25 @@
 ﻿@page "/"
+@using BlazorServer.Config
+@inject AuthProvider AuthProvider
+@inject RedirectRules RedirectRules
 
 <PageTitle>Home</PageTitle>
 
 <Card>
     <Header>
-        <h1>Hello, @AuthState.DisplayName</h1>
+        <h1>Hello, @AuthProvider.DisplayName</h1>
     </Header>
     <Body>
         <ul>
-            @foreach (var claim in AuthState.CurrentUserIdentity.Claims)
+            @foreach (var claim in AuthProvider.CurrentUserIdentity.Claims)
             {
                 <li>@claim.Type : @claim.Value</li>
             }
         </ul>
+
+        <br />
+
+        <h2>@RedirectRules.Rule1.Regex</h2>
     </Body>
 </Card>
 

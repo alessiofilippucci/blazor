@@ -1,7 +1,9 @@
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
 using BlazorServer.Components;
+using BlazorServer.Config;
 using BlazorServer.Infrastructure;
+using BlazorServer.Infrastructure.binder;
 using BlazorServer.Installers.ServiceBuilder;
 using BlazorServer.Services;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -25,6 +27,12 @@ namespace BlazorServer
 
                 var builder = WebApplication.CreateBuilder(args);
 
+                // Recupero config da appsettings e registrazione DI
+                var redirectRules = SettingsSection.Configure(builder.Services, builder.Configuration, new RedirectRules());
+
+                // Solo recupero config da appsettings
+                //var redirectRules = SettingsSection.Get<RedirectRules>(builder.Configuration);
+
                 // Add services to the container.
                 builder.Services.AddRazorComponents()
                     .AddInteractiveServerComponents();
@@ -32,9 +40,9 @@ namespace BlazorServer
                 builder.Services.AddScoped<NewsService>();
                 builder.Services.AddScoped<CacheService>();
                 builder.Services.AddScoped<UserService>();
-                
-                builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-                builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
+
+                builder.Services.AddScoped<AuthProvider>();
+                builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<AuthProvider>());
 
                 builder.Services.AddMemoryCache();
 
@@ -42,6 +50,8 @@ namespace BlazorServer
                 builder.Services.AddBlazoredLocalStorage();
 
                 builder.Services.AddCascadingAuthenticationState();
+
+                builder.Services.AddHttpContextAccessor();
 
                 builder.Services.AddOptions();
                 builder.Services.AddAuthorizationCore(options =>
@@ -67,6 +77,22 @@ namespace BlazorServer
 
                 var optionRules = new RewriteOptions()
                     .AddRedirect("pippo", "https://google.com");
+
+                if (redirectRules != null)
+                {
+                    //if (redirectRules.Rule1 != null)
+                    //{
+                    //    optionRules.AddRewrite(redirectRules.Rule1.Regex, redirectRules.Rule1.Replacement, redirectRules.Rule1.SkipRemainingRules);
+                    //}
+                    //if (redirectRules.Rule2 != null)
+                    //{
+                    //    optionRules.AddRewrite(redirectRules.Rule2.Regex, redirectRules.Rule2.Replacement, redirectRules.Rule2.SkipRemainingRules);
+                    //}
+                    //if (redirectRules.Rule3 != null)
+                    //{
+                    //    optionRules.AddRewrite(redirectRules.Rule3.Regex, redirectRules.Rule3.Replacement, redirectRules.Rule3.SkipRemainingRules);
+                    //}
+                }
 
                 app.UseRewriter(optionRules);
 

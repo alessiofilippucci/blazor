@@ -9,6 +9,8 @@
         public const string Private = "Private";
         public const string MarketReport = "MarketReport";
 
+        public const string CustomRole = "CustomRole";
+
         private static readonly Dictionary<string, List<string>> codeRoles = new Dictionary<string, List<string>>()
         {
             {"MF", new List<string>() { Abbonato, MarketReport } },

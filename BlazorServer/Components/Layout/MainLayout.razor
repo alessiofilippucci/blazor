@@ -1,6 +1,6 @@
 ﻿@using BlazorServer.Infrastructure
 @inherits LayoutComponentBase
-@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@inject AuthProvider AuthProvider
 @inject ILocalStorageService LocalStorage
 
 <div class="page">
@@ -61,7 +61,7 @@
         {
             var token = await LocalStorage.GetItemAsync<string>("token");
 
-            await AuthenticationStateProvider?.CheckTokenAsync(token);
+            await AuthProvider?.CheckTokenAsync(token);
 
             IsLoading = false;
             StateHasChanged();

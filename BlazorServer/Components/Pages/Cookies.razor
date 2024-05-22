@@ -1,0 +1,46 @@
+﻿@page "/cookies"
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>Cookies</PageTitle>
+
+<Card>
+    <Body>
+        <ul>
+            @foreach (var cookieValue in CookieValues)
+            {
+                <li>@cookieValue</li>
+            }
+        </ul>
+        <button type="button" @onclick=SetCookie>Set Cookie</button>
+    </Body>
+</Card>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected List<string> CookieValues { get; set; } = new List<string>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (HttpContext != null)
+        {
+            CookieValues = HttpContext.Request.Cookies.Select(x => $"{x.Key}: {x.Value}").ToList();
+        }
+    }
+
+    protected async Task SetCookie()
+    {
+        try
+        {
+            if (HttpContextAccessor?.HttpContext != null)
+            {
+                HttpContextAccessor.HttpContext.Response.Cookies.Append("pippo", "pluto");
+                StateHasChanged();
+            }
+        }
+        catch (Exception e)
+        {
+        }
+    }
+}

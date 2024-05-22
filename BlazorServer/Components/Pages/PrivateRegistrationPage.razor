@@ -1,9 +1,28 @@
 ﻿@page "/private/registration"
+@inject AuthProvider AuthProvider
+@inject ILocalStorageService LocalStorage
 
 <PageTitle>Private Registration Page</PageTitle>
 
 <Card>
     <Body>
         <h2>Private Registration Page</h2>
+        <button type="button" @onclick=RefreshUserInfo>Refresh User Info</button>
     </Body>
 </Card>
+
+@code {
+
+    protected async Task RefreshUserInfo()
+    {
+        try
+        {
+            var token = await LocalStorage.GetItemAsync<string>("token");
+
+            await AuthProvider.RefreshUserInfo(token);
+        }
+        catch (Exception e)
+        {
+        }
+    }
+}
