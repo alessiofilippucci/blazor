@@ -4,11 +4,11 @@
 
 <Card>
     <Header>
-        <h1>Hello, @AuthService.DisplayName</h1>
+        <h1>Hello, @AuthState.DisplayName</h1>
     </Header>
     <Body>
         <ul>
-            @foreach (var claim in AuthService.CurrentUser.Claims)
+            @foreach (var claim in AuthState.CurrentUserIdentity.Claims)
             {
                 <li>@claim.Type : @claim.Value</li>
             }

@@ -1,4 +1,4 @@
-﻿using BlazorServer.Services;
+﻿using BlazorServer.Infrastructure;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorServer.Components.Pages
@@ -6,13 +6,11 @@ namespace BlazorServer.Components.Pages
     public partial class Home : ComponentBase
     {
         [Inject]
-        private AuthService AuthService { get; set; }
+        private CustomAuthenticationStateProvider AuthState { get; set; }
 
-        protected override async Task OnInitializedAsync()
+        protected override Task OnInitializedAsync()
         {
-            if (AuthService != null && AuthService.CurrentUser != null)
-            {
-            }
+            return base.OnInitializedAsync();
         }
     }
 }

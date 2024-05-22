@@ -1,7 +1,10 @@
 ﻿@page "/login"
+@using BlazorServer.Infrastructure
 @attribute [AllowAnonymous]
-@inject AuthService AuthService
+
 @inject NavigationManager NavigationManager
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorage
 
 <h3>Login</h3>
 
@@ -10,7 +13,7 @@
     <input name="account" @bind-value=Account />
     <label>PASSWORD</label>
     <input name="password" @bind-value=Password />
-    <button type="button" @onclick=OnLogin>LOGIN</button>
+    <button type="button" @onclick=OnLoginAsync>LOGIN</button>
 </form>
 
 <p class="text-danger">@ErrorMessage</p>
@@ -21,17 +24,29 @@
 
     private string ErrorMessage = "";
 
-    protected void OnLogin()
+    protected async Task OnLoginAsync()
     {
-        var response = AuthService.Login(Account, Password);
+        ErrorMessage = "";
 
-        if (response)
+        try
         {
-            NavigationManager.NavigateTo("/");
+            var (logged, token) = await AuthenticationStateProvider.LoginAsync(Account, Password);
+
+            if (logged)
+            {
+                await LocalStorage.SetItemAsStringAsync("token", token);
+                AuthenticationStateProvider.Refresh();
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                ErrorMessage = "Login failed";
+            }
+
         }
-        else
+        catch (Exception e)
         {
-            ErrorMessage = "Login failed";
+            ErrorMessage = e.Message;
         }
     }
 }

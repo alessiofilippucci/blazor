@@ -1,5 +1,6 @@
 ﻿using BlazorServer.Models;
 using RestSharp;
+using RestSharp.Serializers.NewtonsoftJson;
 
 namespace BlazorServer.Services
 {
@@ -9,33 +10,27 @@ namespace BlazorServer.Services
 
         protected readonly CacheService _cacheService;
         protected readonly RestClient _client;
-        protected readonly AuthService _authService;
 
         public NewsService(
             ILogger<NewsService> logger,
-            CacheService cacheService,
-            AuthService authService)
+            CacheService cacheService)
         {
             _logger = logger;
 
             _cacheService = cacheService;
-            _authService = authService;
 
-            _client = new RestClient("https://ws3.class.it/CE.Content/Content.svc/");
+            _client = new RestClient("https://ws3.class.it/CE.Content/Content.svc/", configureSerialization: s => s.UseNewtonsoftJson());
         }
 
-        public List<News> GetData(string idBlocco = "1")
+        public async Task<List<News>> GetDataAsync(string idBlocco = "1")
         {
-            if (_authService.HasRole(Roles.Abbonato))
-            {
-
-            }
-
             //Log.Logger.Information("TEST");
 
             var cacheKey = $"all_news_{idBlocco}";
 
-            List<News> data = _cacheService.GetOrSetCache(cacheKey, () =>
+            var (succeeded, value) = await _cacheService.GetAsync<List<News>>(cacheKey);
+
+            if(!succeeded)
             {
                 var request = new RestRequest("get-news-blocco-dettaglio", Method.Get);
                 request.AddQueryParameter("id_blocco", idBlocco);
@@ -43,20 +38,22 @@ namespace BlazorServer.Services
 
                 if (queryResult.IsSuccessStatusCode)
                 {
-                    return queryResult.Data ?? [];
+                    value = queryResult.Data ?? [];
                 }
                 else
                 {
-                    return [];
+                    value = [];
                 }
-            });
 
-            return data;
+                await _cacheService.SetAsync(cacheKey, value);
+            }
+
+            return value ?? [];
         }
 
-        public News? GetDataById(string id)
+        public async Task<News?> GetDataByIdAsync(string id)
         {
-            var newsList = GetData();
+            var newsList = await GetDataAsync();
             return newsList.FirstOrDefault(x => x.IdNews == id);
         }
     }

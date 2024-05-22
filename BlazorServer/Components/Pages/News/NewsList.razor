@@ -50,14 +50,13 @@ else
 @code {
     private List<News>? newsList;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-
-        GetData();
+        await GetDataAsync();
     }
 
-    protected void GetData()
+    protected async Task GetDataAsync()
     {
-        newsList = newsService.GetData("1");
+        newsList = await newsService.GetDataAsync("1");
     }
 }

@@ -1,33 +1,45 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazorServer.Infrastructure
+@inherits LayoutComponentBase
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorage
 
 <div class="page">
-    <AuthorizeView>
-        <Authorized>
-            <div class="sidebar">
-                <NavMenu />
-            </div>
-            <main>
-                <div class="top-row px-4">
-                    <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-                    <span class="ml-4">@context.User.Identity?.Name</span>
+    @if (IsLoading)
+    {
+        <div id="blazor-error-ui">
+            Loading...
+        </div>
+    }
+    else
+    {
+        <AuthorizeView>
+            <Authorized>
+                <div class="sidebar">
+                    <NavMenu />
                 </div>
+                <main>
+                    <div class="top-row px-4">
+                        <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+                        <span class="ml-4">@context.User.Identity?.Name</span>
+                    </div>
 
-                <article class="content px-4">
-                    @Body
-                </article>
-            </main>
-        </Authorized>
-        <NotAuthorized>
-            <main>
-                <div class="top-row px-4">
-                    <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-                </div>
-                <article class="content px-4">
-                    <Login />
-                </article>
-            </main>
-        </NotAuthorized>
-    </AuthorizeView>
+                    <article class="content px-4">
+                        @Body
+                    </article>
+                </main>
+            </Authorized>
+            <NotAuthorized>
+                <main>
+                    <div class="top-row px-4">
+                        <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+                    </div>
+                    <article class="content px-4">
+                        <Login />
+                    </article>
+                </main>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
 </div>
 
 <div id="blazor-error-ui">
@@ -37,25 +49,22 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationState { get; set; }
+    protected bool IsLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        if (authenticationState != null)
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (IsLoading)
         {
-            var authState = await authenticationState;
+            var token = await LocalStorage.GetItemAsync<string>("token");
 
-            var claimPippo = authState.User.Claims.FirstOrDefault(x => x.Issuer == "pippo");
+            await AuthenticationStateProvider?.CheckTokenAsync(token);
 
-            if (claimPippo != null)
-            {
-                if(claimPippo.Value == "")
-                {
-                    
-
-                }
-            }
+            IsLoading = false;
+            StateHasChanged();
         }
     }
 

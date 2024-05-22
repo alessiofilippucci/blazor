@@ -1,6 +1,6 @@
 ﻿namespace BlazorServer.Models
 {
-    public partial class UserStatus
+    public partial class User
     {
         public PersonalData PersonalData { get; set; }
         public Subscriptions Subscriptions { get; set; }

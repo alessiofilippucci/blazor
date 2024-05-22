@@ -1,3 +1,5 @@
+using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 using BlazorServer.Components;
 using BlazorServer.Infrastructure;
 using BlazorServer.Installers.ServiceBuilder;
@@ -29,11 +31,15 @@ namespace BlazorServer
 
                 builder.Services.AddScoped<NewsService>();
                 builder.Services.AddScoped<CacheService>();
-                builder.Services.AddScoped<AuthService>();
-
-                builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+                builder.Services.AddScoped<UserService>();
+                
+                builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+                builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
 
                 builder.Services.AddMemoryCache();
+
+                builder.Services.AddBlazoredSessionStorage();
+                builder.Services.AddBlazoredLocalStorage();
 
                 builder.Services.AddCascadingAuthenticationState();
 

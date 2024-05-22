@@ -23,11 +23,11 @@ else
 
     private News? news;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (!string.IsNullOrEmpty(Id))
         {
-            news = newsService.GetDataById(Id);
+            news = await newsService.GetDataByIdAsync(Id);
         }
         else
         {
