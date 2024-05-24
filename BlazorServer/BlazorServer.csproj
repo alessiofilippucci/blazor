@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BlazorComponentLibrary\BlazorComponentLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="IISUrlRewrite.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
