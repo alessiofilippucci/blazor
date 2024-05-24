@@ -1,46 +1,56 @@
 ﻿@page "/cookies"
-@inject IHttpContextAccessor HttpContextAccessor
+@inject ICookie Cookie
 
 <PageTitle>Cookies</PageTitle>
 
 <Card>
     <Body>
-        <ul>
-            @foreach (var cookieValue in CookieValues)
-            {
-                <li>@cookieValue</li>
-            }
-        </ul>
+        <InputText @bind-Value=@CookieName />
+        <InputText @bind-Value=@CookieValue />
         <button type="button" @onclick=SetCookie>Set Cookie</button>
     </Body>
 </Card>
 
+<br />
+
+<Card>
+    <Body>
+        <button type="button" @onclick=GetCookie>Get Cookie</button>
+        <p>
+            @CookieCurrentValue
+        </p>
+    </Body>
+</Card>
+
 @code {
-    [CascadingParameter]
-    private HttpContext? HttpContext { get; set; }
+    protected string CookieName { get; set; } = string.Empty;
+    protected string CookieValue { get; set; } = string.Empty;
 
-    protected List<string> CookieValues { get; set; } = new List<string>();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (HttpContext != null)
-        {
-            CookieValues = HttpContext.Request.Cookies.Select(x => $"{x.Key}: {x.Value}").ToList();
-        }
-    }
+    protected string CookieCurrentValue { get; set; } = string.Empty;
 
     protected async Task SetCookie()
     {
         try
         {
-            if (HttpContextAccessor?.HttpContext != null)
+            if (!string.IsNullOrEmpty(CookieName) && !string.IsNullOrEmpty(CookieValue))
             {
-                HttpContextAccessor.HttpContext.Response.Cookies.Append("pippo", "pluto");
+                await Cookie.SetValue(CookieName, CookieValue, 1);
                 StateHasChanged();
             }
         }
-        catch (Exception e)
+        catch { }
+    }
+
+    protected async Task GetCookie()
+    {
+        try
         {
+            if (!string.IsNullOrEmpty(CookieName))
+            {
+                CookieCurrentValue = await Cookie.GetValue(CookieName);
+                StateHasChanged();
+            }
         }
+        catch { }
     }
 }

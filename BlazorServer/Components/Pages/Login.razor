@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthProvider AuthProvider
 @inject ILocalStorageService LocalStorage
+@inject ICookie Cookie
 
 <h3>Login</h3>
 
@@ -35,6 +36,7 @@
             if (logged)
             {
                 await LocalStorage.SetItemAsStringAsync("token", token);
+                //await Cookie.SetValue("username", $"{Account}");
                 AuthProvider.Refresh();
                 NavigationManager.NavigateTo("/");
             }

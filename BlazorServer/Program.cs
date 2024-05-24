@@ -41,6 +41,8 @@ namespace BlazorServer
                 builder.Services.AddScoped<CacheService>();
                 builder.Services.AddScoped<UserService>();
 
+                builder.Services.AddScoped<ICookie, Cookie>();
+
                 builder.Services.AddScoped<AuthProvider>();
                 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<AuthProvider>());
 
