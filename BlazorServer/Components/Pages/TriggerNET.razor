@@ -1,0 +1,19 @@
+﻿@page "/trigger-net-1"
+
+<h3>Trigger NET</h3>
+
+<p>
+    <button onclick="getDataFromNet()">
+        Trigger .NET method
+    </button>
+</p>
+
+
+@code {
+
+    [JSInvokable]
+    public static Task<List<int>> GetData()
+    {
+        return Task.FromResult(Enumerable.Range(1, 10).ToList());
+    }
+}

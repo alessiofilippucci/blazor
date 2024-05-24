@@ -1,0 +1,42 @@
+﻿@page "/trigger-net-2"
+@implements IDisposable
+@inject IJSRuntime JSRuntime
+
+<h3>Trigger 2 NET</h3>
+
+<p>
+    <button onclick="DotNetToJSSample.getData()">
+        Trigger .NET method
+    </button>
+</p>
+
+@if (dotNetToJSSampleReference != null)
+{
+    <p>
+        <InputText @bind-Value=@dotNetToJSSampleReference.Value.Name />
+
+        <button onclick="DotNetToJSSample.getWelcomeMessage()">
+            Welcome Message
+        </button>
+    </p>
+}
+
+
+@code {
+    private DotNetObjectReference<DotNetToJSSample>? dotNetToJSSampleReference;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetToJSSampleReference = DotNetObjectReference.Create(new DotNetToJSSample());
+            await JSRuntime.InvokeVoidAsync("DotNetToJSSample.setDotNetInstance", dotNetToJSSampleReference);
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        dotNetToJSSampleReference?.Dispose();
+    }
+}
