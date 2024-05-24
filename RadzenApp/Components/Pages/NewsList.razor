@@ -1,0 +1,74 @@
+﻿@page "/news-list"
+@inject NewsService newsService
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@* <RadzenDataGrid Data="@news"
+                LoadData=@GetDataAsync
+                PageSize="10"
+                AllowSorting="true"
+                AllowFiltering="true"
+                AllowPaging="true"
+                PagerHorizontalAlign="HorizontalAlign.Left"
+                ShowPagingSummary="true"
+                ColumnWidth="300px">
+    <Columns>
+        <RadzenDataGridColumn Property="Titolo" Title="Titolo" Width="80px" TextAlign="TextAlign.Center" FormatString="{0:d}" />
+        <RadzenDataGridColumn Property="DataPubblicazione" Title="DataPubblicazione" Width="160px" />
+        <RadzenDataGridColumn Property="Autore" Title="Autore" Width="160px" />
+        <RadzenDataGridColumn Title="PathImg" Width="200px" TextAlign="TextAlign.Center">
+            <Template Context="data">
+                <RadzenImage Path="@($"http://{data.PathImg}")" class="rz-gravatar" AlternateText="@(data.Titolo)" />
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+ *@
+<RadzenDataList Data="@news" LoadData=@GetDataAsync>
+    <Template Context="data">
+        <RadzenCard Style="width: 100%; padding: 0;">
+            <RadzenRow Gap="0">
+                <RadzenColumn Size="12" SizeLG="3" Class="rz-p-4">
+                    <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-secondary">@(data.Titolo)</RadzenText>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeLG="7" Class="rz-p-4">
+                    <RadzenRow Gap="0">
+                        <RadzenColumn Size="12" SizeMD="6" SizeLG="2">
+                            <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" Class="rz-mb-0">DataPubblicazione</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body2">@(data.DataPubblicazione)</RadzenText>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="6" SizeLG="2">
+                            <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" Class="rz-mb-0">Autore</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body2">@(data.Autore)</RadzenText>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="6" SizeLG="5">
+                            <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" Class="rz-mb-0">Sommario</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body2">@(data.Sommario)</RadzenText>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="6" SizeLG="3" Class="rz-text-align-start rz-text-align-lg-end">
+                            <RadzenImage Path="@($"http://{data.PathImg}")" Style="max-height: 150px" AlternateText="@(data.Titolo)" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeLG="2" Class="rz-p-4">
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenCard>
+    </Template>
+</RadzenDataList>
+
+@code {
+    IEnumerable<News> news;
+
+    protected async Task GetDataAsync()
+    {
+        // Simulate asynchronous loading to demonstrate a loading indicator
+        await Task.Delay(500);
+
+        news = await newsService.GetDataAsync("1");
+    }
+}
