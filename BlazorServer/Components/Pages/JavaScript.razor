@@ -1,0 +1,30 @@
+﻿@page "/javascript"
+
+@inject IJSRuntime JSRuntime
+@attribute [AllowAnonymous]
+
+<h3>JavaScript</h3>
+
+<button @onclick=@SayHello> Say Hello</button>
+
+<button @onclick=@GetName> Get Name</button>
+
+@if (!string.IsNullOrEmpty(Name))
+{
+    <h2>Ciao @Name</h2>
+}
+
+@code {
+
+    protected string? Name { get; set; }
+
+    protected async Task SayHello()
+    {
+        await JSRuntime.InvokeVoidAsync("sayHello", "Ciao");
+    }
+
+    protected async Task GetName()
+    {
+        Name = await JSRuntime.InvokeAsync<string>("getName");
+    }
+}
